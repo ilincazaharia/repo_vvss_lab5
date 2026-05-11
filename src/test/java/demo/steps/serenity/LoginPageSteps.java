@@ -57,4 +57,8 @@ public class LoginPageSteps {
     public void click_saveCookies() {
         accept_cookies_if_present();
     }
+    @Step
+    public void should_see_text(String text) {
+        loginPage.should_contain_text(text);
+    }
 }

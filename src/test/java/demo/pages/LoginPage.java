@@ -5,6 +5,8 @@ import net.serenitybdd.core.pages.WebElementFacade;
 import net.thucydides.core.annotations.DefaultUrl;
 import net.thucydides.core.pages.PageObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.By;
+import org.junit.Assert;
 
 @DefaultUrl("https://vvss:strugure@scs.ubbcluj.ro/vvta/net2ftp/index.php")
 public class LoginPage extends PageObject {
@@ -44,6 +46,13 @@ public class LoginPage extends PageObject {
         if (findAll(By.id("LoginButton1")).size() > 0) {
             find(By.id("LoginButton1")).click();
         }
+    }
+
+    public void should_contain_text(String text) {
+        Assert.assertTrue(
+                "Textul nu apare in pagina: " + text,
+                find(By.tagName("body")).getText().contains(text)
+        );
     }
 
     public String getPageText() {
