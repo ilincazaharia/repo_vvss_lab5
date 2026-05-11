@@ -1,46 +1,43 @@
 package demo.steps.serenity;
 
-import net.thucydides.core.annotations.Step;
 import demo.pages.LoginPage;
+import net.thucydides.core.annotations.Step;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 
 public class LoginPageSteps {
 
     LoginPage loginPage;
 
     @Step
-    public void select_server_name(String server) {
+    public void go_to_Login_page() {
+        loginPage.open();
+    }
 
+    @Step
+    public void accept_cookies_if_present() {
+        loginPage.saveCookiesIfPresent();
+    }
+
+    @Step
+    public void select_server_name(String server) {
         loginPage.select_server(server);
     }
 
     @Step
     public void enter_username(String username) {
-
         loginPage.enter_username(username);
     }
 
     @Step
     public void enter_password(String password) {
-
         loginPage.enter_password(password);
     }
 
     @Step
     public void click_Login() {
-
         loginPage.click_Login();
-    }
-
-    @Step
-    public void go_to_Login_page() {
-
-        loginPage.open();
-    }
-
-    @Step
-    public void click_saveCookies() {
-
-        loginPage.saveCookies();
     }
 
     @Step
@@ -52,7 +49,12 @@ public class LoginPageSteps {
     }
 
     @Step
-    public void should_to_see_alert(String alert, String message) {
-        assert message.equals(alert);
+    public void should_see_error_message(String message) {
+        assertThat(loginPage.getPageText(), containsString(message));
+    }
+
+    @Step
+    public void click_saveCookies() {
+        accept_cookies_if_present();
     }
 }
