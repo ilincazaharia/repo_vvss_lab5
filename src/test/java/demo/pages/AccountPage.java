@@ -140,22 +140,53 @@ public class AccountPage extends PageObject {
                 "//img[contains(translate(@title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'upload')]/parent::a"
         );
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
+
         File file = new File(filePath);
 
-        WebElement fileInput = findFirstDisplayedElement(
-                "//input[@type='file']"
-        );
+        List<WebElement> fileInputs = getDriver().findElements(By.xpath("//input[@type='file']"));
 
+        if (fileInputs.isEmpty()) {
+            fileInputs = getDriver().findElements(By.cssSelector("input[type='file']"));
+        }
+
+        if (fileInputs.isEmpty()) {
+            throw new AssertionError("Nu am gasit input type=file. Pagina curenta este: " + getBodyText());
+        }
+
+        WebElement fileInput = fileInputs.get(0);
         fileInput.sendKeys(file.getAbsolutePath());
 
-        clickFirstMatchingElement(
-                "//input[contains(translate(@value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'upload')]",
-                "//input[contains(translate(@value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'submit')]",
-                "//input[contains(translate(@value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'ok')]",
-                "//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'upload')]",
-                "//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'submit')]",
-                "//input[@type='submit']"
-        );
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
+
+        List<WebElement> submitElements = getDriver().findElements(By.xpath(
+                "//input[@type='submit' or @type='image' or contains(translate(@value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'upload') or contains(translate(@value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'submit') or contains(translate(@value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'ok')]"
+        ));
+
+        if (!submitElements.isEmpty()) {
+            ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", submitElements.get(0));
+        } else {
+            List<WebElement> forms = getDriver().findElements(By.tagName("form"));
+
+            if (!forms.isEmpty()) {
+                ((JavascriptExecutor) getDriver()).executeScript("arguments[0].submit();", forms.get(0));
+            } else {
+                throw new AssertionError("Nu am gasit buton/form pentru upload. Pagina curenta este: " + getBodyText());
+            }
+        }
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException ignored) {
+        }
+
+        go_back_to_file_list();
     }
 
     public void check_item_to_delete(String itemName) {
@@ -223,23 +254,29 @@ public class AccountPage extends PageObject {
     }
 
     public void go_back_to_file_list() {
-        List<WebElement> links = getDriver().findElements(By.xpath(
-                "//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'back') " +
-                        "or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'go back') " +
-                        "or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'browse') " +
-                        "or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'directory')]"
-        ));
-
-        for (WebElement link : links) {
-            try {
-                if (link.isDisplayed() && link.isEnabled()) {
-                    ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", link);
-                    return;
-                }
-            } catch (Exception ignored) {
-            }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
         }
 
         getDriver().navigate().back();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
+
+        String body = getBodyText().toLowerCase();
+
+        if (body.contains("create new directories")
+                || body.contains("new directory name")
+                || body.contains("the new directories will be created")) {
+            getDriver().navigate().back();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 }

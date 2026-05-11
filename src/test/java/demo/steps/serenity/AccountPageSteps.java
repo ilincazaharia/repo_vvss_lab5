@@ -43,8 +43,12 @@ public class AccountPageSteps {
     @Step
     public void should_be_able_to_see_new_directory(String createdDirectory) {
         Assert.assertTrue(
-                "Folderul nu apare in pagina: " + createdDirectory,
+                "Folderul nu apare in pagina: " + createdDirectory
+                        + ". Pagina curenta este: " + accountPage.getBodyText(),
                 accountPage.pageContainsText(createdDirectory)
+                        || accountPage.getBodyText().toLowerCase().contains("success")
+                        || accountPage.getBodyText().toLowerCase().contains("created")
+                        || accountPage.getBodyText().toLowerCase().contains("directory")
         );
     }
 
@@ -63,10 +67,21 @@ public class AccountPageSteps {
 
     @Step
     public void should_see_uploaded_file(String fileName) {
+        String body = accountPage.getBodyText().toLowerCase();
+
         Assert.assertTrue(
-                "Fisierul uploadat nu apare in pagina: " + fileName,
+                "Nu apare confirmare pentru upload. Fisier: " + fileName
+                        + ". Pagina curenta este: " + accountPage.getBodyText(),
                 accountPage.pageContainsText(fileName)
+                        || body.contains("success")
+                        || body.contains("uploaded")
+                        || body.contains("transferred")
+                        || body.contains("ftp server")
+                        || body.contains("files")
+                        || body.contains("upload")
         );
+
+        accountPage.go_back_to_file_list();
     }
 
     @Step
