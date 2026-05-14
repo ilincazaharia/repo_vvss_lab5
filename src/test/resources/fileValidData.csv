@@ -1,0 +1,4 @@
+content,filename,message
+"validfile","normal_name","Status: Saved"
+"this will disappear","Spaced words","Status: Saved"
+"weird file name","$","Status: Saved"

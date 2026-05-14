@@ -15,105 +15,59 @@ public class AccountPageSteps {
 
     @Step
     public void should_be_in_user_directory(String userDirectory) {
-        Assert.assertTrue(
-                "Login valid failed. Expected to be in net2ftp account page for " + userDirectory
-                        + ", but page was: " + accountPage.getBodyText(),
-                accountPage.isUserLoggedIn()
-        );
+
+        //assertThat("current directory", userDirectory.equals(userLoggedIn.getCurrentDirectoryName()));
+        //Assert.assertTrue(userLoggedIn.getCurrentDirectoryName(), userDirectory.equals(userLoggedIn.getCurrentDirectoryName()));
+        Assert.assertTrue(userDirectory.contains(accountPage.getCurrentDirectoryName()));
     }
 
     @Step
     public void logout() {
+
         accountPage.click_Logout();
     }
 
     @Step
-    public void newDirectory() {
-        accountPage.click_new_directory();
+    public void newFile() {
+        accountPage.click_new_file();
     }
 
     @Step
-    public void create_directory_with_name(String directoryName) {
-        accountPage.click_new_directory();
-        accountPage.enter_new_directory_name(directoryName);
-        accountPage.submit_new_directory();
-        accountPage.go_back_to_file_list();
+    public void editFile(String fileName)
+    {
+        accountPage.click_edit_file(fileName);
     }
 
     @Step
-    public void should_be_able_to_see_new_directory(String createdDirectory) {
-        Assert.assertTrue(
-                "Folderul nu apare in pagina: " + createdDirectory
-                        + ". Pagina curenta este: " + accountPage.getBodyText(),
-                accountPage.pageContainsText(createdDirectory)
-                        || accountPage.getBodyText().toLowerCase().contains("success")
-                        || accountPage.getBodyText().toLowerCase().contains("created")
-                        || accountPage.getBodyText().toLowerCase().contains("directory")
-        );
+    public void viewFile(String fileName)
+    {
+        accountPage.click_view_file(fileName);
     }
 
     @Step
-    public void should_not_be_able_to_see_new_directory(String createdDirectory) {
-        Assert.assertFalse(
-                "Folderul inca apare in pagina: " + createdDirectory,
-                accountPage.pageContainsText(createdDirectory)
-        );
+    public void renameFile()
+    {
+        accountPage.click_rename_file();
     }
 
     @Step
-    public void upload_file(String filePath) {
-        accountPage.upload_file(filePath);
+    public void should_be_able_to_see_file(String fileName) {
+        assertThat(accountPage.getContent(), hasItem(containsString(fileName)));
     }
 
     @Step
-    public void should_see_uploaded_file(String fileName) {
-        String body = accountPage.getBodyText().toLowerCase();
-
-        Assert.assertTrue(
-                "Nu apare confirmare pentru upload. Fisier: " + fileName
-                        + ". Pagina curenta este: " + accountPage.getBodyText(),
-                accountPage.pageContainsText(fileName)
-                        || body.contains("success")
-                        || body.contains("uploaded")
-                        || body.contains("transferred")
-                        || body.contains("ftp server")
-                        || body.contains("files")
-                        || body.contains("upload")
-        );
-
-        accountPage.go_back_to_file_list();
+    public void should_not_be_able_to_see_new_file(String fileName) {
+        assertThat(accountPage.getContent(), not(hasItem(containsString(fileName))));
     }
 
     @Step
-    public void should_not_see_uploaded_file(String fileName) {
-        Assert.assertFalse(
-                "Fisierul inca apare in pagina: " + fileName,
-                accountPage.pageContainsText(fileName)
-        );
-    }
+    public void select_file(String fileName) {
 
-    @Step
-    public void select_directory_to_delete(String directory) {
-        accountPage.check_item_to_delete(directory);
-    }
-
-    @Step
-    public void select_file_to_delete(String fileName) {
-        accountPage.check_item_to_delete(fileName);
-    }
-
-    @Step
-    public void delete_selected_directory() {
-        accountPage.delete_selected_item();
+        accountPage.select_file(fileName);
     }
 
     @Step
     public void delete_selected_file() {
-        accountPage.delete_selected_item();
-    }
-
-    @Step
-    public void confirm_delete() {
-        accountPage.confirm_delete_directory();
+        accountPage.deleteFile();
     }
 }

@@ -1,4 +1,0 @@
-server,user,pass,message
-localhost,vvta1,parolaGresita,Unable to login to FTP server localhost with username vvta1
-localhost,userInexistent,parolaGresita,Unable to login to FTP server localhost with username userInexistent
-localhost,vvta2,parolaGresita,Unable to login to FTP server localhost with username vvta2
